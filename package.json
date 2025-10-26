@@ -1,3 +1,6 @@
+"dependencies": {
+  "@supabase/supabase-js": "2.39.0"
+}
 {
   "name": "ai-office-mvp",
   "version": "1.0.0",
