@@ -210,4 +210,240 @@ export default function PowerPointEditor() {
                       </button>
                       <button
                         onClick={(e) => { e.stopPropagation(); deleteSlide(index); }}
-                        className="p-2 bg-red-500/50
+                        className="p-2 bg-red-500/50 hover:bg-red-500/70 rounded transition"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </aside>
+
+        {/* Toggle Left Sidebar Button */}
+        {!leftSidebarOpen && (
+          <button
+            onClick={() => setLeftSidebarOpen(true)}
+            className="absolute left-0 top-1/2 -translate-y-1/2 p-2 bg-slate-800 hover:bg-slate-700 border-r border-white/10 rounded-r-lg transition z-10"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        )}
+
+        {/* Main Canvas */}
+        <main className="flex-1 flex flex-col items-center justify-center p-8 bg-slate-900/20 overflow-auto">
+          <div className="relative">
+            {/* Slide Canvas */}
+            <div className={`w-[960px] h-[540px] bg-gradient-to-br ${currentTheme.bg} rounded-2xl shadow-2xl overflow-hidden`}>
+              <div className="h-full flex flex-col justify-center items-center p-16 text-center">
+                {/* Title */}
+                {editingTitle ? (
+                  <input
+                    type="text"
+                    value={slides[activeSlide]?.title}
+                    onChange={(e) => updateSlideTitle(e.target.value)}
+                    onBlur={() => setEditingTitle(false)}
+                    autoFocus
+                    className="w-full bg-white/10 backdrop-blur-sm text-5xl font-bold text-white border-2 border-white/30 rounded-lg px-6 py-4 mb-8 focus:outline-none focus:border-white/50"
+                    style={{ fontFamily: selectedFont }}
+                  />
+                ) : (
+                  <h1
+                    onClick={() => setEditingTitle(true)}
+                    className="text-5xl font-bold text-white mb-8 cursor-pointer hover:bg-white/10 px-6 py-4 rounded-lg transition"
+                    style={{ fontFamily: selectedFont }}
+                  >
+                    {slides[activeSlide]?.title}
+                  </h1>
+                )}
+
+                {/* Content */}
+                {editingContent ? (
+                  <textarea
+                    value={slides[activeSlide]?.content}
+                    onChange={(e) => updateSlideContent(e.target.value)}
+                    onBlur={() => setEditingContent(false)}
+                    autoFocus
+                    className="w-full h-48 bg-white/10 backdrop-blur-sm text-2xl text-white border-2 border-white/30 rounded-lg px-6 py-4 focus:outline-none focus:border-white/50 resize-none"
+                    style={{ fontFamily: selectedFont, fontSize: selectedFontSize }}
+                  />
+                ) : (
+                  <p
+                    onClick={() => setEditingContent(true)}
+                    className="text-2xl text-white/90 cursor-pointer hover:bg-white/10 px-6 py-4 rounded-lg transition"
+                    style={{ fontFamily: selectedFont, fontSize: selectedFontSize }}
+                  >
+                    {slides[activeSlide]?.content}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Slide Navigation */}
+            <div className="flex items-center justify-center gap-4 mt-6">
+              <button
+                onClick={() => setActiveSlide(Math.max(0, activeSlide - 1))}
+                disabled={activeSlide === 0}
+                className="p-2 bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              
+              <span className="text-sm text-gray-400">
+                Slide {activeSlide + 1} of {slides.length}
+              </span>
+              
+              <button
+                onClick={() => setActiveSlide(Math.min(slides.length - 1, activeSlide + 1))}
+                disabled={activeSlide === slides.length - 1}
+                className="p-2 bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </main>
+
+        {/* Right Sidebar - Properties */}
+        <aside className={`border-l border-white/10 bg-slate-900/30 transition-all duration-300 ${rightSidebarOpen ? 'w-80' : 'w-0'} overflow-hidden`}>
+          <div className="p-4 h-full overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="font-semibold text-sm text-gray-400">PROPERTIES</h3>
+              <button
+                onClick={() => setRightSidebarOpen(false)}
+                className="p-1 hover:bg-white/10 rounded transition"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Themes Section */}
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-4">
+                <Palette className="w-4 h-4 text-gray-400" />
+                <h4 className="font-semibold text-sm">THEMES</h4>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                {themes.map(theme => (
+                  <button
+                    key={theme.id}
+                    onClick={() => changeTheme(theme.id)}
+                    className={`aspect-video bg-gradient-to-br ${theme.bg} rounded-lg transition ${
+                      slides[activeSlide]?.theme === theme.id ? 'ring-2 ring-emerald-500' : 'hover:ring-2 hover:ring-white/30'
+                    }`}
+                    title={theme.name}
+                  >
+                    <span className="sr-only">{theme.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Layout Section */}
+            <div className="mb-8">
+              <h4 className="font-semibold text-sm mb-4">LAYOUT</h4>
+              <div className="space-y-2">
+                <button className="w-full p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-left text-sm transition">
+                  Title Slide
+                </button>
+                <button className="w-full p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-left text-sm transition">
+                  Title + Content
+                </button>
+                <button className="w-full p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-left text-sm transition">
+                  Two Columns
+                </button>
+                <button className="w-full p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-left text-sm transition">
+                  Blank
+                </button>
+              </div>
+            </div>
+
+            {/* AI Tools Section */}
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-4">
+                <Sparkles className="w-4 h-4 text-purple-400" />
+                <h4 className="font-semibold text-sm">AI TOOLS</h4>
+              </div>
+              <div className="space-y-2">
+                <button
+                  onClick={regenerateWithAI}
+                  className="w-full p-3 bg-gradient-to-r from-purple-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-pink-600/30 border border-purple-500/30 rounded-lg text-left text-sm transition"
+                >
+                  Regenerate Content
+                </button>
+                <button className="w-full p-3 bg-gradient-to-r from-purple-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-pink-600/30 border border-purple-500/30 rounded-lg text-left text-sm transition">
+                  Improve Writing
+                </button>
+                <button className="w-full p-3 bg-gradient-to-r from-purple-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-pink-600/30 border border-purple-500/30 rounded-lg text-left text-sm transition">
+                  Generate Image
+                </button>
+                <button className="w-full p-3 bg-gradient-to-r from-purple-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-pink-600/30 border border-purple-500/30 rounded-lg text-left text-sm transition">
+                  Make Shorter
+                </button>
+              </div>
+            </div>
+
+            {/* Slide Settings */}
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <Settings className="w-4 h-4 text-gray-400" />
+                <h4 className="font-semibold text-sm">SETTINGS</h4>
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs text-gray-400 mb-2 block">Transition</label>
+                  <select className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+                    <option>None</option>
+                    <option>Fade</option>
+                    <option>Slide</option>
+                    <option>Zoom</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-400 mb-2 block">Duration</label>
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="3"
+                    step="0.5"
+                    defaultValue="1"
+                    className="w-full"
+                  />
+                  <div className="text-xs text-gray-400 text-right mt-1">1.0s</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        {/* Toggle Right Sidebar Button */}
+        {!rightSidebarOpen && (
+          <button
+            onClick={() => setRightSidebarOpen(true)}
+            className="absolute right-0 top-1/2 -translate-y-1/2 p-2 bg-slate-800 hover:bg-slate-700 border-l border-white/10 rounded-l-lg transition z-10"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+        )}
+      </div>
+
+      {/* Bottom Status Bar */}
+      <footer className="border-t border-white/10 bg-slate-900/50 px-4 py-2 flex items-center justify-between text-xs text-gray-400">
+        <div className="flex items-center gap-4">
+          <span>Last saved: Just now</span>
+          <span>•</span>
+          <span>Auto-save: On</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <button className="hover:text-white transition">
+            <Star className="w-4 h-4" />
+          </button>
+          <span>100% zoom</span>
+        </div>
+      </footer>
+    </div>
+  );
+}
